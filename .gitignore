@@ -20,6 +20,8 @@ _deps/*
 *.dir/*
 Release/*
 Testing/*
+plot_*.csv
+plot_*.xlsx
 x64/*
 CMakeFiles/*
 dist/*
@@ -28,6 +30,9 @@ build/*
 *egg-info/*
 .coverage
 CMakeCache.txt
+onnxruntime_*.json
+_doc/LICENSE.rst
+_doc/CHANGELOGS.rst
 _doc/examples/_cache/*
 _doc/auto_examples/*
 _doc/examples/*.xlsx
