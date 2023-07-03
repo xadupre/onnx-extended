@@ -483,7 +483,6 @@ class TestOrtOpTutorialCuda(ExtTestCase):
         "CUDAExecutionProvider" not in get_available_providers(),
         reason="CUDA provider not available",
     )
-
     @unittest.skipIf(
         Version(ort_version) < Version("1.16"), reason="float8 types not released"
     )
