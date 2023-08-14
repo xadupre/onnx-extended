@@ -33,6 +33,7 @@ build/*
 CMakeCache.txt
 onnxruntime_*.json
 _doc/LICENSE.rst
+_doc/LICENSE.txt
 _doc/CHANGELOGS.rst
 _doc/examples/_cache/*
 _doc/auto_examples/*
@@ -49,5 +50,6 @@ _unittests/ut__main/*.png
 _unittests/test_constants.h
 onnx_extended/_config.py
 onnx_extended/validation/cython/*.c
+onnx_extended/validation/cython/*.cpp
 onnx_extended/validation/cython/vector_function_cy.c*
 onnx_extended/ortcy/wrap/ortinf.c*

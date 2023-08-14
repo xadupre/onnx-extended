@@ -17,7 +17,7 @@ onnx-extended: extensions for onnx and onnxruntime
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
     :alt: MIT License
-    :target: http://opensource.org/licenses/MIT
+    :target: https://opensource.org/license/MIT/
 
 .. image:: https://img.shields.io/github/repo-size/sdpython/onnx-extended
     :target: https://github.com/sdpython/onnx-extended/
@@ -27,11 +27,13 @@ onnx-extended: extensions for onnx and onnxruntime
     :target: https://github.com/psf/black
 
 **onnx-extended** extends the list of supported operators in onnx
-reference implementation, or implements faster versions in C++.
+reference implementation and `onnxruntime
+<https://github.com/microsoft/onnxruntime>`_,
+or implements faster versions in C++.
 Documentation `onnx-extended
-<https://sdpython.github.io/doc/onnx-extended/>`_.
+<https://sdpython.github.io/doc/onnx-extended/dev/>`_.
 Source are available on `github/onnx-extended
-<https://github.com/sdpython/onnx-extended>`_.
+<https://github.com/sdpython/onnx-extended/>`_.
 
 Use C++ a implementation of existing operators
 ++++++++++++++++++++++++++++++++++++++++++++++
@@ -98,17 +100,29 @@ Build with CUDA, openmp, eigen, onnxruntime
 
 The package also contains some dummy examples on how to
 build with C++ functions (`pybind11 <https://github.com/pybind/pybind11>`_,
-`cython <https://cython.org/>`_), with `openmp
-<https://www.openmp.org/>`_, `eigen <https://eigen.tuxfamily.org/index.php>`_
+`cython <https://cython.org/>`_),
+with `openmp <https://www.openmp.org/>`_,
+`eigen <https://eigen.tuxfamily.org/index.php>`_
 with or without CUDA. It also shows how to create a custom operator
 for `onnxruntime <https://onnxruntime.ai/>`_ in C++.
-The build will automatically link with CUDA if it is found.
+
+The version released on `pypi/onnx-extended <https://pypi.org/project/onnx-extended/>`_
+only works on CPU. It needs to be manually built to enable
+the code using CUDA. The build will automatically link with CUDA if it is found.
 If not, some extensions might not be available.
 
 ::
 
     python setup.py build_ext --inplace
     # pip install -e .
+
+It is possible to use a specific version of CUDA:
+
+::
+
+    python setup.py build_ext --inplace --cuda-version=11.8
+    # or (not working yet)
+    # pip install -e . --config-settings="--cuda-version=11.8"
 
 `NVTX <https://github.com/NVIDIA/NVTX>`_
 can be enabled with the following command:
@@ -127,3 +141,23 @@ its functionalities. *onnx-extended* tries to build a cython wrapper
 around the C/C++ API of onnxruntime. cython relies on python C API
 and is faster than pybind11. This different may be significant when
 onnxruntime is used on small graphs and tensors.
+
+Custom kernels for onnxruntime
+++++++++++++++++++++++++++++++
+
+onnxruntime provides an API to add custom implementation
+for existing or new onnx operators. An example for CPU.
+
+::
+
+    from onnxruntime import InferenceSession, SessionOptions
+    from onnx_extended.ortops.optim.cpu import get_ort_ext_libs
+
+    r = get_ort_ext_libs()
+    opts = SessionOptions()
+    if r is not None:
+        opts.register_custom_ops_library(r[0])
+
+    sess_cus = InferenceSession(
+        onx_modified.SerializeToString(), opts, providers=["CPUExecutionProvider"]
+    )

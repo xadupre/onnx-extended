@@ -1,3 +1,4 @@
+import time
 from itertools import product
 from typing import Any, Callable, Dict, List, Optional, Union
 import numpy
@@ -156,7 +157,7 @@ def change_onnx_operator_domain(
 
 def optimize_model(
     onx: ModelProto,
-    feeds: Dict[str, numpy.array],
+    feeds: Dict[str, numpy.ndarray],
     transform: Callable[ModelProto, ModelProto],
     session: Callable[ModelProto, Any],
     params: Dict[str, List[Any]],
@@ -166,6 +167,7 @@ def optimize_model(
     repeat: int = 10,
     warmup: int = 5,
     n_tries: int = 2,
+    sleep: float = 0.1,
 ) -> List[Dict[str, Union[str, float]]]:
     """
     Optimizes a model by trying out many possibilities.
@@ -176,19 +178,27 @@ def optimize_model(
         based on the values coming from *params*
     :param session: function which takes a modifed ModelProto
         and return a session
+    :param params: dictionary of values to test `{ param_name: [ param_values ] }`
     :param baseline: function which takes a modifed ModelProto
         and return a session, identified as the baseline
     :param verbose: use :epkg:`tqdm` to show improvment
-    :param number: parameter to :func:`measure_time`
-    :param repeat: parameter to :func:`measure_time`
-    :param warmup: parameter to :func:`measure_time`
+    :param number: parameter to :func:`measure_time
+        <onnx_extended.ext_test_case.measure_time>`
+    :param repeat: parameter to :func:`measure_time
+        <onnx_extended.ext_test_case.measure_time>`
+    :param warmup: parameter to :func:`measure_time
+        <onnx_extended.ext_test_case.measure_time>`
     :param n_tries: number of times to measure, if the measurements returns
         very different results, values for *number* or *repeat* should
         be increased
-    :return: list of results returned by :func:`measure_time`
+    :param sleep: time to sleep between two measurements
+    :return: list of results returned by :func:`measure_time
+        <onnx_extended.ext_test_case.measure_time>`
 
     See example :ref:`l-plot-optim-tree-ensemble` for an example.
     """
+    if sleep >= 1:
+        raise ValueError(f"sleep={sleep} >= 1, probably a mistake.")
     keys = ["TRY"] + list(params.keys())
     sets = [list(range(n_tries))] + [params[k] for k in keys[1:]]
     loops = list(product(*sets))
@@ -202,6 +212,10 @@ def optimize_model(
     res = []
     if baseline is not None:
         sess = baseline(onx)
+        # one run to make run it is working
+        sess.run(None, feeds)
+        if sleep > 0:
+            time.sleep(sleep)
         obs = measure_time(
             lambda sess=sess: sess.run(None, feeds),
             number=number,
@@ -224,6 +238,8 @@ def optimize_model(
         del kwargs["TRY"]
         onx_modified = transform(onx, **kwargs)
         sess = session(onx_modified)
+        if sleep > 0:
+            time.sleep(sleep)
         obs = measure_time(
             lambda sess=sess: sess.run(None, feeds),
             number=number,
@@ -239,6 +255,8 @@ def optimize_model(
     if baseline is not None:
         for n in range(1, n_tries):
             sess = baseline(onx)
+            if sleep > 0:
+                time.sleep(sleep)
             obs = measure_time(
                 lambda sess=sess: sess.run(None, feeds),
                 number=number,

@@ -24,6 +24,7 @@ message(STATUS "PYTHON_MODULE_EXTENSION=${PYTHON_MODULE_EXTENSION}")
 message(STATUS "PYTHON_NUMPY_VERSION=${PYTHON_NUMPY_VERSION}")
 message(STATUS "USE_CUDA=${USE_CUDA}")
 message(STATUS "CUDA_BUILD=${CUDA_BUILD}")
+message(STATUS "CUDA_LINK=${CUDA_LINK}")
 message(STATUS "USE_NVTX=${USE_NVTX}")
 message(STATUS "ORT_VERSION=${ORT_VERSION}")
 
@@ -53,17 +54,45 @@ include("load_externals.cmake")
 # modules
 #
 
-set(ROOT_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
+message(STATUS "--------------------------------------------")
+set(ROOT_PROJECT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
+set(ROOT_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../onnx_extended/cpp/include)
+set(ROOT_UNITTEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../_unittests)
+message(STATUS "ROOT_PROJECT_PATH=${ROOT_PROJECT_PATH}")
+message(STATUS "ROOT_INCLUDE_PATH=${ROOT_INCLUDE_PATH}")
+message(STATUS "ROOT_UNITTEST_PATH=${ROOT_UNITTEST_PATH}")
+message(STATUS "--------------------------------------------")
+
+#
+# standalone modules
+#
 
 include("targets/_validation.cmake")
+include("targets/cuda_example_py.cmake")
+include("targets/vector_function_cy.cmake")
+include("targets/fp8_cy.cmake")
+
+#
+# common libraries for kernel implementations
+#
+
+include("targets/common_kernels.cmake")
+
+#
+# new kernels for the onnx python runtime
+#
+
 include("targets/ortinf.cmake")
 include("targets/c_op_conv_.cmake")
 include("targets/c_op_tree_ensemble_py_.cmake")
-include("targets/cuda_example_py.cmake")
-include("targets/vector_function_cy.cmake")
+
+#
+# new kernels for onnxruntime
+#
 
 set(ORTOPS_INCLUDE_DIR "${ROOT_INCLUDE_PATH}/onnx_extended/ortops")
 set(REFOPS_INCLUDE_DIR "${ROOT_INCLUDE_PATH}/onnx_extended/reference/c_ops")
+
 include("targets/ortops_tutorial_cpu.cmake")
 include("targets/ortops_tutorial_cuda.cmake")
 include("targets/ortops_optim_cpu.cmake")

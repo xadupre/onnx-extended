@@ -14,7 +14,7 @@ onnx-extended: more operators for onnx
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
     :alt: MIT License
-    :target: http://opensource.org/licenses/MIT
+    :target: https://opensource.org/license/MIT/
 
 .. image:: https://img.shields.io/github/repo-size/sdpython/onnx-extended
     :target: https://github.com/sdpython/onnx-extended/
@@ -25,21 +25,25 @@ onnx-extended: more operators for onnx
 
 **onnx-extended** extends the list of supported operators in onnx
 reference implementation, or implements faster versions in C++.
-Documentation `onnx-extended
-<http://www.xavierdupre.fr/app/onnx-extended/helpsphinx/index.html>`_.
 Source are available on `github/onnx-extended
-<https://github.com/sdpython/onnx-extended>`_,
-see also `code coverage <cov/index.html>`_.
+<https://github.com/sdpython/onnx-extended/>`_.
 
 .. toctree::
     :maxdepth: 1
+    :caption: Contents
 
     tutorial/index
     api/index
     tech/index
+    benchmarks
     auto_examples/index
+
+.. toctree::
+    :maxdepth: 1
+    :caption: More
+
     CHANGELOGS
-    LICENSE
+    license
 
 Use C++ a implementation of existing operators
 ++++++++++++++++++++++++++++++++++++++++++++++
@@ -127,4 +131,4 @@ onnxruntime is used on small graphs and tensors.
 Older versions
 ++++++++++++++
 
-* `0.1.0 <v0.1.0/index.html>`_
+* `0.1.0 <../v0.1.0/index.html>`_
